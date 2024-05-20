@@ -1,9 +1,6 @@
 # Secure Web APIs with Nginx and SSL
 This project demonstrates how to set up two web APIs (Django Ninja and FastAPI) running in Docker containers, and securely expose them over HTTPS using Nginx as a reverse proxy. The project includes steps for configuring subdomains, obtaining SSL certificates with Certbot, and routing traffic to the appropriate services.
 
-That sounds like a fantastic idea! Publishing your mini-project on GitHub can showcase your skills and serve as a reference for others. Here’s a suggestion for naming your repository and what to include in your README:
-
-
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
