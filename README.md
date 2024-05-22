@@ -43,7 +43,25 @@ We will create two minimal and simple Web APIs using two different Python backen
 
 ### 4. Dockerize the Web APIs
 
-TODO: Include `Dockerfile`s in this section.
+Authenticate to Azure Container Registry with Docker. Make sure that [`Admin user`](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#admin-account) is enabled.
+```bash
+docker login <ACR_NAME>.azurecr.io
+```
+
+
+**Dockerizing Django Ninja Web API**
+```bash
+cd django-ninja-api
+docker build -t <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0 .
+docker push <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0
+```
+**Dockerizing FastAPI Web API**
+```bash
+cd fastapi-api
+docker build -t <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0 .
+docker push <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0
+```
+
 
 ### 5. Run Docker Containers
 
