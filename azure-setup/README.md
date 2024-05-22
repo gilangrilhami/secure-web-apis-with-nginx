@@ -7,6 +7,8 @@ Required resources:
 - Virtual Machine (VM)
 - Container Registries
 
+**TODO**: Provide script to automaticallt provisioned resources with Azure CLI and OpenTofu.
+
 ## Resource Group
 
 All subsequent resources will be previosioned within this Resource Group. Please refer follow [these instructions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups) to create an Azure Resource Group.
