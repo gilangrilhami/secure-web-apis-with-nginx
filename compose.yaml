@@ -1,0 +1,17 @@
+services:
+
+  web-api-django-ninja:
+    container_name: web-api-django-ninja
+    build: ./django-ninja-api
+    # image: <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0
+    command: uvicorn django_ninja_api.asgi:application --host 0.0.0.0 --port 8000
+    ports:
+      - 8081:8000
+
+  web-api-fastapi:
+    container_name: web-api-fastapi
+    build: ./fastapi-api
+    # image: <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0
+    command: fastapi run main.py --host 0.0.0.0 --port 8000
+    ports:
+      - 8082:8000

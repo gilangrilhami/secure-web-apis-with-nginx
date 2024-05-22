@@ -43,15 +43,68 @@ We will create two minimal and simple Web APIs using two different Python backen
 
 ### 4. Dockerize the Web APIs
 
-TODO: Include `Dockerfile`s in this section.
+Authenticate to Azure Container Registry with Docker. Make sure that [`Admin user`](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#admin-account) is enabled.
+```bash
+docker login <ACR_NAME>.azurecr.io
+```
+
+
+**Dockerizing Django Ninja Web API**
+```bash
+cd django-ninja-api
+docker build -t <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0 .
+docker push <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0
+```
+**Dockerizing FastAPI Web API**
+```bash
+cd fastapi-api
+docker build -t <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0 .
+docker push <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0
+```
+
 
 ### 5. Run Docker Containers
 
-Run the following Docker commands in Azure VM:
+Enter the Azure VM via `ssh`.
 
 ```bash
-docker run -d -p 8081:8081 --name django_ninja_container django_ninja_image
-docker run -d -p 8082:8082 --name fast_api_container fast_api_image
+ssh <VM_USER>@<VM_IP>
+```
+
+Running the Docker containers can be done either by `docker run` or `docker compose`.
+
+**Using `docker run`**
+```bash
+# Django Ninja Web API
+docker run --rm -p 8081:8000 -d <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0 uvicorn django_ninja_api.asgi:application --host 0.0.0.0 --port 8000
+
+# FastAPI Web API
+docker run --rm -p 8082:8000 -d <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0 fastapi run main.py --host 0.0.0.0 --port 8000
+```
+**Using `docker compose`**
+
+First, copy the `compose.yaml` from this repository file into Azure VM.
+
+Then, replace the `build` key with the `image` key, and set the value to the build images on Azure Container Registry.
+
+```bash
+services:
+
+  web-api-django-ninja:
+    ...
+    # build: ./django-ninja-api
+    image: <ACR_NAME>.azurecr.io/web-api-django-ninja:v0.1.0
+    ...
+
+  web-api-fastapi:
+    ...
+    # build: ./fastapi-api
+    image: <ACR_NAME>.azurecr.io/web-api-fastapi:v0.1.0
+    ...
+```
+Finally, run `docker compose` command. Make sure to run this in the directory where `compose.yaml` file is located at.
+```bash
+docker compose -f compose.yaml -d up
 ```
 
 **NOTE**: It might be worth accessing the two Web APIs via `http` for testing purposes; ports will be closed later on to ensure `https` access is working as mentioned in [Closing External Ports](#closing-external-ports). Please refer to the following links to expose port `8081` and `8082`:
