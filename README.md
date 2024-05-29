@@ -123,21 +123,47 @@ For simplcity, we want to have subdomains that reflects the differences of the t
 - `fast-api.<DOMAIN_NAME>.com`
 
 ### 7. Install and Configure Nginx
+
+To install Nginx, please refer to [this article](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04).
 Please refer to the following articles on how to setup and configure Nnginx:
 
 - [Install Nginx on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04)
 - [Configure Nginx as a Reverse Proxy on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-as-a-reverse-proxy-on-ubuntu-22-04)
 
+
 ### 8. Obtain SSL Certificates
 
-Please follow the [instruction from Certbot official website](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal).
+Please follow the [instruction from Certbot official website](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal) to install Cerbot.
+
+Once Certbot is configured, generate SSL Certificates for both subdomains.
+
+```bash
+sudo certbot --nginx -d django-ninja.<DOMAIN_NAME>.com
+
+sudo certbot --nginx -d django-ninja.<DOMAIN_NAME>.com
+```
+
+The command above should result in the following output:
+
+```
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/django-ninja.<DOMAIN_NAME>.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/django-ninja.<DOMAIN_NAME>.com/privkey.pem
+This certificate expires on 2024-08-22.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
+Deploying certificate
+...
+Successfully deployed certificate for django-ninja.<DOMAIN_NAME>.com to /etc/nginx/sites-enabled/django-ninja.<DOMAIN_NAME>.com
+```
 
 ### 9. Finalize Nginx Configuration
 TODO: Include Nginx configuration files for each Web APIs.
 
 
 ## Testing
-Open a browser and navigate to `https://django-ninja.domain.com` and `https://fast-api.domain.com` to verify the setup.
+Open a browser and navigate to `https://django-ninja.<DOMAIN_NAME>.com` and `https://fast-api.<DOMAIN_NAME>.com` to verify the setup.
 
 
 ## Closing External Ports
