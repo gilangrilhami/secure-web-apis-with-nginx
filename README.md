@@ -11,8 +11,8 @@ This project demonstrates how to set up two web APIs (Django Ninja and FastAPI) 
   - [5. Run Docker Containers](#5-run-docker-containers)
   - [6. Configure Domain and Subdomains](#6-configure-domain-and-subdomains)
   - [7. Install and Configure Nginx](#7-install-and-configure-nginx)
-  - [8. Obtain SSL Certificates](#8-obtain-ssl-certificates)
-  - [9. Finalize Nginx Configuration](#9-finalize-nginx-configuration)
+  - [8. Configuration Nginx Server Blocks for Web APIs](#8-configuration-nginx-server-blocks-for-web-apis)
+  - [9. Obtain SSL Certificates](#9-obtain-ssl-certificates)
 - [Testing](#testing)
 - [Closing External Ports](#closing-external-ports)
 - [Conclusion](#conclusion)
@@ -123,21 +123,60 @@ For simplcity, we want to have subdomains that reflects the differences of the t
 - `fast-api.<DOMAIN_NAME>.com`
 
 ### 7. Install and Configure Nginx
+
+To install Nginx, please refer to [this article](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04).
 Please refer to the following articles on how to setup and configure Nnginx:
 
-- [Install Nginx on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04)
-- [Configure Nginx as a Reverse Proxy on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-as-a-reverse-proxy-on-ubuntu-22-04)
+### 8. Configuration Nginx Server Blocks for Web APIs
 
-### 8. Obtain SSL Certificates
+Please refer to [this article](https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-as-a-reverse-proxy-on-ubuntu-22-04) to get some familiarity to configure Nginx's Server Block.
 
-Please follow the [instruction from Certbot official website](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal).
+To allow the Web APIs to be accessible through Nginx, we need to create an Nginx configuration file, and then enebale it.
 
-### 9. Finalize Nginx Configuration
-TODO: Include Nginx configuration files for each Web APIs.
+Here is an example to do this with the `django-ninja.<DOMAIN_NAME>.com` Web API. First we need to create an Nginx configuration file called `django-ninja.<DOMAIN_NAME>.com` in `/etc/nginx/sites-available/` directory.
+
+```bash
+sudo nano /etc/nginx/sites-available/django-ninja.<DOMAIN_NAME>.com
+```
+Please filled the file with the content provided [here](./nginx-confs/sites-available/django-ninja).
+
+Now, we can enabled the configuration.
+```bash
+sudo ln -s /etc/nginx/sites-available/django-ninja.<DOMAIN_NAME>.com /etc/nginx/sites-enabled/
+```
+
+Do the same for `fastapi.<DOMAIN_NAME>.com`, which the configuration can be found [here](./nginx-confs/sites-available/fastapi).
+
+### 9. Obtain SSL Certificates
+
+Please follow the [instruction from Certbot official website](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal) to install Cerbot.
+
+Once Certbot is configured, generate SSL Certificates for both subdomains.
+
+```bash
+sudo certbot --nginx -d django-ninja.<DOMAIN_NAME>.com
+
+sudo certbot --nginx -d django-ninja.<DOMAIN_NAME>.com
+```
+
+The command above should result in the following output:
+
+```
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/django-ninja.<DOMAIN_NAME>.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/django-ninja.<DOMAIN_NAME>.com/privkey.pem
+This certificate expires on 2024-08-22.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
+Deploying certificate
+...
+Successfully deployed certificate for django-ninja.<DOMAIN_NAME>.com to /etc/nginx/sites-enabled/django-ninja.<DOMAIN_NAME>.com
+```
 
 
 ## Testing
-Open a browser and navigate to `https://django-ninja.domain.com` and `https://fast-api.domain.com` to verify the setup.
+Open a browser and navigate to `https://django-ninja.<DOMAIN_NAME>.com` and `https://fast-api.<DOMAIN_NAME>.com` to verify the setup.
 
 
 ## Closing External Ports
