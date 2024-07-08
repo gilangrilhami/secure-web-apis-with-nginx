@@ -11,7 +11,8 @@
 				"ms-vscode-remote.remote-containers",
 				"PKief.material-icon-theme",
 				"christian-kohler.path-intellisense",
-				"VisualStudioExptTeam.vscodeintellicode"
+				"VisualStudioExptTeam.vscodeintellicode",
+				"gamunu.opentofu"
 			]
 		}
 	}
