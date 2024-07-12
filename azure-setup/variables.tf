@@ -82,3 +82,8 @@ variable "virtual_machine_admin_password" {
   sensitive   = true
   description = "The admin password for the virtual machine."
 }
+
+variable "public_ip_name" {
+  type = string
+  description = "The name for a VM's Public IP"
+}
