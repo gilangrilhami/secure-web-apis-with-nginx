@@ -45,6 +45,13 @@ resource "azurerm_subnet" "project_vm_vnet_subnets_default" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
+resource "azurerm_public_ip" "project_vm_public_ip" {
+  name                = var.public_ip_name
+  location            = azurerm_resource_group.project_resource_group.location
+  resource_group_name = azurerm_resource_group.project_resource_group.name
+  allocation_method   = "Dynamic"
+}
+
 resource "azurerm_network_interface" "project_vm_nic" {
   name                = var.network_interface_name
   location            = azurerm_resource_group.project_resource_group.location
@@ -55,7 +62,43 @@ resource "azurerm_network_interface" "project_vm_nic" {
     subnet_id                     = azurerm_subnet.project_vm_vnet_subnets_default.id
     private_ip_address_allocation = "Dynamic"
     private_ip_address_version    = "IPv4"
+    public_ip_address_id          = azurerm_public_ip.project_vm_public_ip.id
   }
+}
+
+resource "azurerm_network_security_group" "project_nsg" {
+  name                = var.network_security_group_name
+  location            = azurerm_resource_group.project_resource_group.location
+  resource_group_name = azurerm_resource_group.project_resource_group.name
+
+  security_rule {
+    name                       = "allow-https"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "allow-ssh"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "project_nsg_association" {
+  subnet_id                 = azurerm_subnet.project_vm_vnet_subnets_default.id
+  network_security_group_id = azurerm_network_security_group.project_nsg.id
 }
 
 resource "azurerm_linux_virtual_machine" "project_virtual_machine" {
@@ -81,5 +124,18 @@ resource "azurerm_linux_virtual_machine" "project_virtual_machine" {
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts-gen2"
     version   = "latest"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get upgrade -y"
+    ]
+
+    connection {
+      type     = "ssh"
+      user     = var.virtual_machine_admin_username
+      password = var.virtual_machine_admin_password
+      host     = azurerm_public_ip.project_vm_public_ip.ip_address
+    }
   }
 }
